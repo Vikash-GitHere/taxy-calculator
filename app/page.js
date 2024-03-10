@@ -28,14 +28,31 @@ export default function Home() {
     const deduction = parseInt(deductions) || 0;
 
     // Calculate total income
-    const totalIncome =
+    /*const totalIncome =
       grossSalary +
       otherIncome +
       interestIncome +
       rentIncome -
       selfOccupiedInterest -
       letOutInterest -
-      deduction;
+      deduction;*/
+
+    let netTaxableIncome = grossIncome;
+
+    // Step 1: Deduct exemptions such as HRA, LTA, and standard deduction
+    const hraExemption = Math.min(hraReceived, rentPaid - (0.1 * basicSalary), 0.5 * basicSalary);
+    const totalExemptions = hraExemption + ltaExemption + standardDeduction;
+    netTaxableIncome -= totalExemptions;
+
+    // Add income from other sources
+    netTaxableIncome += otherIncome;
+
+    // Step 2: Deduct investments under Section 80C and home loan interest
+    const totalDeductions = Math.min(section80CInvestments, 150000) + Math.min(homeLoanInterest, 200000) + netInvestment;
+    netTaxableIncome -= totalDeductions;
+
+    // Step 3: Calculate net taxable income
+    netTaxableIncome = Math.max(netTaxableIncome, 0);
 
     // Tax calculation logic based on the provided income
     let tax = 0;
@@ -62,7 +79,22 @@ export default function Home() {
         (totalIncome - 1500000) * 0.3;
     }
 
+    if (netTaxableIncome <= 500000) {
+      tax -= Math.min(tax, 12500);
+    }
+
+  // Apply surcharge for very high-income brackets
+    if (grossIncome > 5000000 && grossIncome <= 10000000) {
+        tax += tax * 0.1; // Surcharge of 10%
+    } else if (grossIncome > 10000000 && grossIncome <= 20000000) {
+        tax += tax * 0.2; // Surcharge of 20%
+    }
+
+  // Add health and education cess of 4%
+    tax += tax * 0.04;
+    
     setResult(`The income tax of an income of ₹${totalIncome} is: ₹${tax.toFixed(2)}`);
+
   }
 
   return (
@@ -149,6 +181,168 @@ export default function Home() {
               id="incomeFromOtherSources"
               type="number"
               placeholder="Enter your income from other sources"
+              value={incomeFromOtherSources}
+              onChange={(e) => setIncomeFromOtherSources(e.target.value)}
+              min="0"
+              required
+              className="w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring focus:border-blue-500 border border-gray-300 rounded-lg backdrop-filter backdrop-blur-lg bg-opacity-60"
+            />
+          </div>
+          <div className="mb-6">
+            <label
+              htmlFor="incomeFromOtherSources"
+              className="block text-gray-700 text-sm font-bold mb-2"
+            >
+              HRA Received:
+            </label>
+            <input
+              id="hraExemptions"
+              type="number"
+              placeholder="Enter your income "
+              value={incomeFromOtherSources}
+              onChange={(e) => setIncomeFromOtherSources(e.target.value)}
+              min="0"
+              required
+              className="w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring focus:border-blue-500 border border-gray-300 rounded-lg backdrop-filter backdrop-blur-lg bg-opacity-60"
+            />
+          </div>
+          <div className="mb-6">
+            <label
+              htmlFor="incomeFromOtherSources"
+              className="block text-gray-700 text-sm font-bold mb-2"
+            >
+              Rent Paid:
+            </label>
+            <input
+              id="rentPaid"
+              type="number"
+              placeholder="Enter your income "
+              value={incomeFromOtherSources}
+              onChange={(e) => setIncomeFromOtherSources(e.target.value)}
+              min="0"
+              required
+              className="w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring focus:border-blue-500 border border-gray-300 rounded-lg backdrop-filter backdrop-blur-lg bg-opacity-60"
+            />
+          </div>
+          <div className="mb-6">
+            <label
+              htmlFor="incomeFromOtherSources"
+              className="block text-gray-700 text-sm font-bold mb-2"
+            >
+              Basic salary:
+            </label>
+            <input
+              id="basicSalary"
+              type="number"
+              placeholder="Enter your income "
+              value={incomeFromOtherSources}
+              onChange={(e) => setIncomeFromOtherSources(e.target.value)}
+              min="0"
+              required
+              className="w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring focus:border-blue-500 border border-gray-300 rounded-lg backdrop-filter backdrop-blur-lg bg-opacity-60"
+            />
+          </div>
+          <div className="mb-6">
+            <label
+              htmlFor="incomeFromOtherSources"
+              className="block text-gray-700 text-sm font-bold mb-2"
+            >
+              LTA Exemption:
+            </label>
+            <input
+              id="hraExemptions"
+              type="number"
+              placeholder="Enter your income "
+              value={incomeFromOtherSources}
+              onChange={(e) => setIncomeFromOtherSources(e.target.value)}
+              min="0"
+              required
+              className="w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring focus:border-blue-500 border border-gray-300 rounded-lg backdrop-filter backdrop-blur-lg bg-opacity-60"
+            />
+          </div>
+          <div className="mb-6">
+            <label
+              htmlFor="incomeFromOtherSources"
+              className="block text-gray-700 text-sm font-bold mb-2"
+            >
+              Standard Deductions:
+            </label>
+            <input
+              id="hraExemptions"
+              type="number"
+              placeholder="Enter your income "
+              value={incomeFromOtherSources}
+              onChange={(e) => setIncomeFromOtherSources(e.target.value)}
+              min="0"
+              required
+              className="w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring focus:border-blue-500 border border-gray-300 rounded-lg backdrop-filter backdrop-blur-lg bg-opacity-60"
+            />
+          </div>
+          <div className="mb-6">
+            <label
+              htmlFor="incomeFromOtherSources"
+              className="block text-gray-700 text-sm font-bold mb-2"
+            >
+              Other Income:
+            </label>
+            <input
+              id="hraExemptions"
+              type="number"
+              placeholder="Enter your other income "
+              value={incomeFromOtherSources}
+              onChange={(e) => setIncomeFromOtherSources(e.target.value)}
+              min="0"
+              required
+              className="w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring focus:border-blue-500 border border-gray-300 rounded-lg backdrop-filter backdrop-blur-lg bg-opacity-60"
+            />
+          </div>
+          <div className="mb-6">
+            <label
+              htmlFor="incomeFromOtherSources"
+              className="block text-gray-700 text-sm font-bold mb-2"
+            >
+              Section 80C Investments:
+            </label>
+            <input
+              id="hraExemptions"
+              type="number"
+              placeholder="Enter your Investments "
+              value={incomeFromOtherSources}
+              onChange={(e) => setIncomeFromOtherSources(e.target.value)}
+              min="0"
+              required
+              className="w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring focus:border-blue-500 border border-gray-300 rounded-lg backdrop-filter backdrop-blur-lg bg-opacity-60"
+            />
+          </div>
+          <div className="mb-6">
+            <label
+              htmlFor="incomeFromOtherSources"
+              className="block text-gray-700 text-sm font-bold mb-2"
+            >
+              Home Loan Inerest:
+            </label>
+            <input
+              id="hraExemptions"
+              type="number"
+              placeholder="Enter your Home Loan Interest "
+              value={incomeFromOtherSources}
+              onChange={(e) => setIncomeFromOtherSources(e.target.value)}
+              min="0"
+              required
+              className="w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring focus:border-blue-500 border border-gray-300 rounded-lg backdrop-filter backdrop-blur-lg bg-opacity-60"
+            />
+          </div>
+          <div className="mb-6">
+            <label
+              htmlFor="incomeFromOtherSources"
+              className="block text-gray-700 text-sm font-bold mb-2"
+            >
+              Net Investment:
+            </label>
+            <input
+              id="hraExemptions"
+              type="number"
+              placeholder="Enter your investment "
               value={incomeFromOtherSources}
               onChange={(e) => setIncomeFromOtherSources(e.target.value)}
               min="0"
